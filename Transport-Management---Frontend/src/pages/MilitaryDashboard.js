@@ -69,7 +69,7 @@ const MilitaryDashboard = () => {
     };
 
     const handleRegisterTruck = () => {
-        navigate('/gate-employee');
+        navigate('/new-truck');
     };
 
     const handleViewMyTrucks = () => {

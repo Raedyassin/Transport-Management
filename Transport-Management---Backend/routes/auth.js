@@ -14,7 +14,7 @@ router.post('/login', [
 ], async (req, res) => {
     try {
         // طباعة البيانات للتصحيح
-        console.log('Login attempt:', req.body);
+        // console.log('Login attempt:', req.body);
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({
@@ -28,7 +28,7 @@ router.post('/login', [
 
         // البحث عن المستخدم
         const user = await User.findOne({ email });
-        console.log('User found:', user);
+        // console.log('User found:', user);
         if (!user) {
             return res.status(401).json({
                 success: false,

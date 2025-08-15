@@ -37,7 +37,7 @@ const CreateNewTruck = () => {
                 setContractors(contractorsRes.data.data);
                 setFactories(factoriesRes.data.data);
                 setGates(gatesRes.data.data);
-            } catch (error) {
+            } catch (error) {   
                 toast.error('خطأ في جلب البيانات');
             }
         };

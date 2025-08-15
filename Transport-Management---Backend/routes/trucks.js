@@ -133,7 +133,6 @@ router.post('/register-new-truck', authenticateToken, requireMilitary, [
             deviceCardNumber,   
             gateId
         } = req.body; 
-        console.log(req.body);
         
         // تحويل رقم اللوحة إلى رقم صحيح والتأكد من صحته
         const parsedPlateNumber = Number(plateNumber);

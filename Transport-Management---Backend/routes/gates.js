@@ -7,7 +7,7 @@ const { authenticateToken, requireAdmin } = require('../middleware/auth');
 const router = express.Router();
 
 // Get all gates (Admin only)
-router.get('/', [authenticateToken, requireAdmin], async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const gates = await Gate.find({ isActive: true }).sort({ name: 1 });
 
