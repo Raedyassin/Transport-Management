@@ -26,7 +26,9 @@ import {
 import Header from '../components/Header';
 
 const AdminDashboard = () => {
-    const { user, logout } = useAuth();
+    const { user,
+        // logout
+    } = useAuth();
     const navigate = useNavigate();
     const [stats, setStats] = useState({
         totalUsers: 0,
@@ -71,11 +73,11 @@ const AdminDashboard = () => {
         }
     };
 
-    const handleLogout = () => {
-        logout();
-        navigate('/login');
-        toast.success('تم تسجيل الخروج بنجاح');
-    };
+    // const handleLogout = () => {
+    //     logout();
+    //     navigate('/login');
+    //     toast.success('تم تسجيل الخروج بنجاح');
+    // };
 
     const handleManageUsers = () => {
         navigate('/admin/users');
@@ -111,7 +113,7 @@ const AdminDashboard = () => {
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Header */}
-            <Header user={user} handleLogout={handleLogout} />
+            <Header />
 
             {/* Main Content */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

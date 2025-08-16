@@ -83,7 +83,7 @@ export const usersAPI = {
     getAll: () => api.get('/users'),
     create: (data) => api.post('/users', data),
     update: (id, data) => api.put(`/users/${id}`, data),
-    updatePassword: (id, data) => api.put(`/users/${id}/password`, data),
+    // updatePassword: (id, data) => api.put(`/users/${id}/password`, data),
     delete: (id) => api.delete(`/users/${id}`),
     getStats: (id) => api.get(`/users/${id}/stats`),
 };

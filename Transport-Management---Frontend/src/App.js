@@ -14,6 +14,7 @@ import TruckManagementPage from './pages/TruckManagementPage';
 import StatisticsPage from './pages/StatisticsPage';
 import './index.css';
 import GatesManagement from './pages/GatesManagement';
+import MyTrucks from './pages/MyTrucks';
 
 // إنشاء QueryClient
 const queryClient = new QueryClient({
@@ -81,6 +82,8 @@ const AppContent = () => {
 
                 {/* صفحة موظف البوابة (بدون تسجيل دخول) */}
                 <Route path="/new-truck" element={<CreateNewTruck />} />
+                {/* صفحة موظف عربياتي */}
+                <Route path="/my-trucks" element={<MyTrucks />} />
 
                 {/* صفحات محمية */}
                 <Route

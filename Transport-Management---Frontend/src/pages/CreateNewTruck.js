@@ -8,6 +8,7 @@ import Select from '../components/Select';
 import Card from '../components/Card';
 import { Truck, CheckCircle, AlertCircle } from 'lucide-react';
 import { use } from 'react';
+import Header from '../components/Header';
 
 const CreateNewTruck = () => {
     const [loading, setLoading] = useState(false);
@@ -78,9 +79,11 @@ const CreateNewTruck = () => {
         label: g.name,
     }))
     return (
-        <div className="min-h-screen bg-gray-50 py-8">
-            <div className="max-w-4xl mx-auto px-4">
+        <div className="min-h-screen bg-gray-50 py-8 pt-0">
+            <Header/>
+            <div className="max-w-4xl mx-auto px-4 mt-5">
                 {/* Header */}
+
                 <div className="text-center mb-8">
                     <div className="flex justify-center mb-4">
                         <div className="bg-primary-600 p-3 rounded-full">

@@ -2,8 +2,9 @@ const express = require('express');
 const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
 const Truck = require('../models/Truck');
+const Gate = require('../models/Gate');
 const { authenticateToken, requireAdmin } = require('../middleware/auth');
-
+const bcrypt = require('bcryptjs');
 const router = express.Router();
 
 // الحصول على جميع المستخدمين (للأدمن)
@@ -30,7 +31,7 @@ router.post('/', authenticateToken, requireAdmin, [
     body('password').isLength({ min: 6 }).withMessage('كلمة المرور يجب أن تكون 6 أحرف على الأقل'),
     body('name').notEmpty().withMessage('الاسم مطلوب'),
     body('role').isIn(['admin', 'military']).withMessage('الدور غير صحيح'),
-    body('gateId').optional().notEmpty().withMessage('رقم البوابة مطلوب للعسكري')
+    // body('gateId').optional().isMongoId().withMessage('رقم البوابة مطلوب للعسكري')
 ], async (req, res) => {
     try {
         const errors = validationResult(req);
@@ -42,7 +43,7 @@ router.post('/', authenticateToken, requireAdmin, [
             });
         }
 
-        const { email, password, name, role, gateId } = req.body;
+        const { email, password, name, role } = req.body;
 
         // التحقق من عدم تكرار البريد الإلكتروني
         const existingUser = await User.findOne({ email });
@@ -54,19 +55,19 @@ router.post('/', authenticateToken, requireAdmin, [
         }
 
         // التحقق من وجود رقم البوابة للعسكري
-        if (role === 'military' && !gateId) {
-            return res.status(400).json({
-                success: false,
-                message: 'رقم البوابة مطلوب للعسكري'
-            });
-        }
+        // if (role === 'military' && !gateId) {
+        //     return res.status(400).json({
+        //         success: false,
+        //         message: 'رقم البوابة مطلوب للعسكري'
+        //     });
+        // }
 
         const user = new User({
             email,
-            password,
+            password: await bcrypt.hash(password, 10),
             name,
             role,
-            gateId: role === 'military' ? gateId : undefined
+            // gateId: role === 'military' ? gateId : undefined
         });
 
         await user.save();
@@ -91,11 +92,88 @@ router.post('/', authenticateToken, requireAdmin, [
 });
 
 // تحديث مستخدم
+// router.put('/:id', authenticateToken, requireAdmin, [
+//     body('email').isEmail().withMessage('البريد الإلكتروني غير صحيح'),
+//     body('name').notEmpty().withMessage('الاسم مطلوب'),
+//     body('role').isIn(['admin', 'military']).withMessage('الدور غير صحيح'),
+//     // body('gateId').optional().notEmpty().withMessage('رقم البوابة مطلوب للعسكري')
+// ], async (req, res) => {
+//     try {
+//         const errors = validationResult(req);
+//         if (!errors.isEmpty()) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: 'بيانات غير صحيحة',
+//                 errors: errors.array()
+//             });
+//         }
+
+//         const { email, name, role,
+//             // gateId,
+//             isActive } = req.body;
+
+//         // التحقق من عدم تكرار البريد الإلكتروني
+//         const existingUser = await User.findOne({
+//             email,
+//             _id: { $ne: req.params.id }
+//         });
+//         if (existingUser) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: 'البريد الإلكتروني موجود مسبقاً'
+//             });
+//         }
+
+//         // التحقق من وجود رقم البوابة للعسكري
+//         // if (role === 'military' && !gateId) {
+//         //     return res.status(400).json({
+//         //         success: false,
+//         //         message: 'رقم البوابة مطلوب للعسكري'
+//         //     });
+//         // }
+
+//         const updateData = {
+//             email,
+//             name,
+//             role,
+//             isActive
+//         };
+
+//         // if (role === 'military') {
+//         //     updateData.gateId = gateId;
+//         // }
+
+//         const user = await User.findByIdAndUpdate(
+//             req.params.id,
+//             updateData,
+//             { new: true }
+//         ).select('-password');
+
+//         if (!user) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: 'المستخدم غير موجود'
+//             });
+//         }
+
+//         res.json({
+//             success: true,
+//             message: 'تم تحديث المستخدم بنجاح',
+//             data: user
+//         });
+
+//     } catch (error) {
+//         console.error('Update user error:', error);
+//         res.status(500).json({
+//             success: false,
+//             message: 'خطأ في الخادم'
+//         });
+//     }
+// });
 router.put('/:id', authenticateToken, requireAdmin, [
-    body('email').isEmail().withMessage('البريد الإلكتروني غير صحيح'),
-    body('name').notEmpty().withMessage('الاسم مطلوب'),
-    body('role').isIn(['admin', 'military']).withMessage('الدور غير صحيح'),
-    body('gateId').optional().notEmpty().withMessage('رقم البوابة مطلوب للعسكري')
+    body('name').optional().notEmpty().withMessage('الاسم مطلوب'),
+    body('role').optional().isIn(['admin', 'military']).withMessage('الدور غير صحيح'),
+    body('password').optional().isLength({ min: 6 }).withMessage('كلمة المرور يجب أن تكون 6 أحرف على الأقل')
 ], async (req, res) => {
     try {
         const errors = validationResult(req);
@@ -107,51 +185,45 @@ router.put('/:id', authenticateToken, requireAdmin, [
             });
         }
 
-        const { email, name, role, gateId, isActive } = req.body;
+        const { name, role, password,
+            // isActive 
+        } = req.body;
 
-        // التحقق من عدم تكرار البريد الإلكتروني
-        const existingUser = await User.findOne({
-            email,
-            _id: { $ne: req.params.id }
-        });
-        if (existingUser) {
-            return res.status(400).json({
-                success: false,
-                message: 'البريد الإلكتروني موجود مسبقاً'
-            });
+        // بناء كائن التحديث بناءً على الحقول المرسلة
+        const updateData = {};
+
+        if (name !== undefined && password !== '') {
+            updateData.name = name;
         }
 
-        // التحقق من وجود رقم البوابة للعسكري
-        if (role === 'military' && !gateId) {
-            return res.status(400).json({
-                success: false,
-                message: 'رقم البوابة مطلوب للعسكري'
-            });
+        if (role !== undefined && password !== '') {
+            updateData.role = role;
         }
 
-        const updateData = {
-            email,
-            name,
-            role,
-            isActive
-        };
-
-        if (role === 'military') {
-            updateData.gateId = gateId;
+        if (password !== undefined && password !== '') {
+            // تشفير كلمة المرور الجديدة
+            updateData.password = await bcrypt.hash(password, 10);
         }
 
-        const user = await User.findByIdAndUpdate(
-            req.params.id,
-            updateData,
-            { new: true }
-        ).select('-password');
+        // if (isActive !== undefined) {
+        //     updateData.isActive = isActive;
+        // }
 
-        if (!user) {
+        // التحقق من وجود المستخدم
+        const existingUser = await User.findById(req.params.id);
+        if (!existingUser) {
             return res.status(404).json({
                 success: false,
                 message: 'المستخدم غير موجود'
             });
         }
+
+        // التحديث
+        const user = await User.findByIdAndUpdate(
+            req.params.id,
+            updateData,
+            { new: true }
+        ).select('-password');
 
         res.json({
             success: true,
@@ -169,45 +241,45 @@ router.put('/:id', authenticateToken, requireAdmin, [
 });
 
 // تغيير كلمة المرور
-router.put('/:id/password', authenticateToken, requireAdmin, [
-    body('password').isLength({ min: 6 }).withMessage('كلمة المرور يجب أن تكون 6 أحرف على الأقل')
-], async (req, res) => {
-    try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({
-                success: false,
-                message: 'بيانات غير صحيحة',
-                errors: errors.array()
-            });
-        }
+// router.put('/:id/password', authenticateToken, requireAdmin, [
+//     body('password').isLength({ min: 6 }).withMessage('كلمة المرور يجب أن تكون 6 أحرف على الأقل')
+// ], async (req, res) => {
+//     try {
+//         const errors = validationResult(req);
+//         if (!errors.isEmpty()) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: 'بيانات غير صحيحة',
+//                 errors: errors.array()
+//             });
+//         }
 
-        const { password } = req.body;
+//         const { password } = req.body;
 
-        const user = await User.findById(req.params.id);
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: 'المستخدم غير موجود'
-            });
-        }
+//         const user = await User.findById(req.params.id);
+//         if (!user) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: 'المستخدم غير موجود'
+//             });
+//         }
 
-        user.password = password;
-        await user.save();
+//         user.password = password;
+//         await user.save();
 
-        res.json({
-            success: true,
-            message: 'تم تغيير كلمة المرور بنجاح'
-        });
+//         res.json({
+//             success: true,
+//             message: 'تم تغيير كلمة المرور بنجاح'
+//         });
 
-    } catch (error) {
-        console.error('Change password error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'خطأ في الخادم'
-        });
-    }
-});
+//     } catch (error) {
+//         console.error('Change password error:', error);
+//         res.status(500).json({
+//             success: false,
+//             message: 'خطأ في الخادم'
+//         });
+//     }
+// });
 
 // حذف مستخدم
 router.delete('/:id', authenticateToken, requireAdmin, async (req, res) => {

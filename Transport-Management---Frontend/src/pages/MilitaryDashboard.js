@@ -19,7 +19,9 @@ import {
 import Header from '../components/Header';
 
 const MilitaryDashboard = () => {
-    const { user, logout } = useAuth();
+    const { user,
+        // logout 
+        } = useAuth();
     const navigate = useNavigate();
     // const [myTrucks, setMyTrucks] = useState([]);
     // const [stats, setStats] = useState({
@@ -62,11 +64,11 @@ const MilitaryDashboard = () => {
         }
     };
 
-    const handleLogout = () => {
-        logout();
-        navigate('/login');
-        toast.success('تم تسجيل الخروج بنجاح');
-    };
+    // const handleLogout = () => {
+    //     logout();
+    //     navigate('/login');
+    //     toast.success('تم تسجيل الخروج بنجاح');
+    // };
 
     const handleRegisterTruck = () => {
         navigate('/new-truck');
@@ -74,7 +76,8 @@ const MilitaryDashboard = () => {
 
     const handleViewMyTrucks = () => {
         // يمكن إضافة صفحة منفصلة لعرض عربيات العسكري
-        toast.info('سيتم إضافة صفحة عربياتي قريباً');
+        // toast.info('سيتم إضافة صفحة عربياتي قريباً');
+        navigate('/my-trucks');
     };
 
     const handleEditTruck = (truck) => {
@@ -122,7 +125,9 @@ const MilitaryDashboard = () => {
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Header */}
-            <Header user={user} handleLogout={handleLogout} />
+            <Header
+                // user={user} handleLogout={handleLogout}
+            />
 
             <div className="max-w-7xl  mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Stats Cards */}

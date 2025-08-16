@@ -50,6 +50,7 @@ const UserManagementPage = () => {
     };
 
     const onSubmit = async (data) => {
+        // console.log("data",data);
         try {
             if (editingUser) {
                 await usersAPI.update(editingUser._id, data);
@@ -70,7 +71,6 @@ const UserManagementPage = () => {
     const handleEdit = (user) => {
         setEditingUser(user);
         setValue('name', user.name);
-        setValue('username', user.username);
         setValue('role', user.role);
         setShowForm(true);
     };
@@ -95,7 +95,7 @@ const UserManagementPage = () => {
 
     const filteredUsers = users.filter(user => {
         const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.username.toLowerCase().includes(searchTerm.toLowerCase());
+            user.email.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesRole = filterRole === 'all' || user.role === filterRole;
         return matchesSearch && matchesRole;
     });
@@ -158,18 +158,21 @@ const UserManagementPage = () => {
                     <Card title={editingUser ? 'تعديل المستخدم' : 'إضافة مستخدم جديد'}>
                         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <Input
-                                    label="الاسم"
-                                    placeholder="اسم المستخدم"
-                                    error={errors.name?.message}
-                                    {...register('name', { required: 'الاسم مطلوب' })}
-                                />
+                                {!editingUser && (
+                                    <Input
+                                        label="الايميل"
+                                        placeholder="example@example.com"
+                                        type="email"
+                                        error={errors.email?.message}
+                                        {...register('email', { required: 'الايميل مطلوب' })}
+                                    />
+                                )}
 
                                 <Input
-                                    label="اسم المستخدم"
-                                    placeholder="username"
-                                    error={errors.username?.message}
-                                    {...register('username', { required: 'اسم المستخدم مطلوب' })}
+                                    label="الاسم"
+                                    placeholder="الاسم الكامل"
+                                    error={errors.name?.message}
+                                    {...register('name', { required: 'الاسم مطلوب' })}
                                 />
 
                                 <Input
@@ -215,7 +218,7 @@ const UserManagementPage = () => {
                                             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                                             <input
                                                 type="text"
-                                                placeholder="البحث بالاسم أو اسم المستخدم"
+                                                placeholder="البحث بالاسم أو الايميل"
                                                 value={searchTerm}
                                                 onChange={(e) => setSearchTerm(e.target.value)}
                                                 className="w-full pr-10 pl-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
@@ -247,10 +250,13 @@ const UserManagementPage = () => {
                                                 المستخدم
                                             </th>
                                             <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                الايميل
+                                            </th>
+                                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                 الدور
                                             </th>
                                             <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                تاريخ الإنشاء
+                                                التاريخ
                                             </th>
                                             <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                 الإجراءات
@@ -275,16 +281,18 @@ const UserManagementPage = () => {
                                                             <div className="text-sm font-medium text-gray-900">
                                                                 {user.name}
                                                             </div>
-                                                            <div className="text-sm text-gray-500">
-                                                                {user.username}
-                                                            </div>
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="text-sm text-gray-900">
+                                                        {user.email}
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
                                                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.role === 'admin'
-                                                            ? 'bg-red-100 text-red-800'
-                                                            : 'bg-blue-100 text-blue-800'
+                                                        ? 'bg-red-100 text-red-800'
+                                                        : 'bg-blue-100 text-blue-800'
                                                         }`}>
                                                         {user.role === 'admin' ? 'أدمن' : 'عسكري'}
                                                     </span>
@@ -331,4 +339,4 @@ const UserManagementPage = () => {
     );
 };
 
-export default UserManagementPage; 
+export default UserManagementPage;

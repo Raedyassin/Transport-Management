@@ -28,10 +28,10 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
-    gateId: {
-        type: String,
-        required: function () { return this.role === 'military'; }
-    },
+    // gateId: {
+    //     type: String,
+    //     required: function () { return this.role === 'military'; }
+    // },
     createdAt: {
         type: Date,
         default: Date.now

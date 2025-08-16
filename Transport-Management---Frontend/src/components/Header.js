@@ -3,8 +3,19 @@ import {
     User,
 } from 'lucide-react';
 import Button from '../components/Button';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 
-export default function Header({user, handleLogout}) {
+export default function Header() {
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
+    const handleLogout = () => {
+      logout();
+      navigate('/login');
+      toast.success('تم تسجيل الخروج بنجاح');
+    };
+  
   return (
     <div className="bg-white shadow-sm border-b">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

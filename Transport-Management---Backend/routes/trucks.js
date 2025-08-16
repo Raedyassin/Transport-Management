@@ -287,6 +287,7 @@ router.get('/my-trucks', authenticateToken, requireMilitary, async (req, res) =>
         const trucks = await Truck.find({ registeredBy: req.user._id })
             .populate('contractor', 'name')
             .populate('factory', 'name')
+            .populate("gateId", "name")
             .sort({ registeredAt: -1 })
             .limit(limit * 1)
             .skip((page - 1) * limit);
